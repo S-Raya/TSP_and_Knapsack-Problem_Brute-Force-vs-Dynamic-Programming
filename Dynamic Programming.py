@@ -1,10 +1,10 @@
 import networkx as nx
 import time
 
-# Define the graph with ore information (including weight and value) and edges (including distance)
+# Membuat Graf
 G = nx.DiGraph()
 
-# Add nodes with ore information (including weight and value)
+# Membuat Node dengan nama ore, value, dan weight
 G.add_node('A', ore='start', value=0, weight=0)
 G.add_node('B', ore='iron', value=6, weight=2)
 G.add_node('C', ore='coal', value=2, weight=1)
@@ -15,7 +15,7 @@ G.add_node('G', ore='iron', value=6, weight=2)
 G.add_node('H', ore='coal', value=2, weight=1)
 G.add_node('I', ore='diamond', value=12, weight=7)
 
-# Add edges with travel distance (consider both directions)
+# membuat edge dua arah
 edges = [
     ('A', 'B', 5), ('B', 'A', 5), ('A', 'H', 6), ('H', 'A', 6),
     ('A', 'C', 3), ('C', 'A', 3), ('B', 'D', 4), ('D', 'B', 4),
@@ -28,10 +28,10 @@ edges = [
 for u, v, distance in edges:
     G.add_edge(u, v, distance=distance)
 
-MAX_ORE_WEIGHT = 15  # Maximum weight the miner can carry
+MAX_ORE_WEIGHT = 15  # Max inventory Penambang
 
 def dynamic_programming_solution(graph, max_ore_weight):
-    # Memoization table
+    # Memoization
     memo = {}
 
     def dp(node, carried_weight, visited):
@@ -63,26 +63,26 @@ def dynamic_programming_solution(graph, max_ore_weight):
         memo[(node, carried_weight, tuple(sorted(visited)))] = (best_value, best_weight, best_path)
         return memo[(node, carried_weight, tuple(sorted(visited)))]
 
-    # Ensure that the miner starts at 'A', goes to at least one other node, and returns to 'A'
+
     best_value, best_weight, best_path = dp('A', 0, set(['A']))
 
-    # Ensure the path starts and ends at 'A'
+
     if best_path and best_path[-1] != 'A':
         best_path.append('A')
 
-    # Ensure the miner moves to at least one node
+
     if len(best_path) == 2 and best_path[0] == best_path[1] == 'A':
         best_path = []
 
     return best_path, best_value, best_weight
 
-# Measure the running time
+# Running Time
 start_time = time.time()
 dp_path, dp_value, dp_weight = dynamic_programming_solution(G, MAX_ORE_WEIGHT)
 end_time = time.time()
 running_time = end_time - start_time
 
-# Calculate ore counts and total distance
+# Jumlah Ore dan Total Distance
 ore_counts = {}
 total_distance = 0
 for i in range(len(dp_path) - 1):
@@ -91,7 +91,7 @@ for i in range(len(dp_path) - 1):
         ore_counts[ore] = ore_counts.get(ore, 0) + 1
     total_distance += G.edges[dp_path[i], dp_path[i + 1]]['distance']
 
-# Include the ore from the last node if it's not 'start'
+
 if dp_path and G.nodes[dp_path[-1]]['ore'] != 'start':
     ore = G.nodes[dp_path[-1]]['ore']
     ore_counts[ore] = ore_counts.get(ore, 0) + 1
