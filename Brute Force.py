@@ -2,10 +2,10 @@ import networkx as nx
 import itertools
 import time
 
-# Define the graph with ore information (including value and weight) and edges (including distance)
+# Membuat Graf
 G = nx.DiGraph()
 
-# Add nodes with ore information (including weight and value)
+# Membuat Node dengan nama ore, value, dan weight
 G.add_node('A', ore='start', value=0, weight=0)
 G.add_node('B', ore='iron', value=6, weight=2)
 G.add_node('C', ore='coal', value=2, weight=1)
@@ -16,7 +16,7 @@ G.add_node('G', ore='iron', value=6, weight=2)
 G.add_node('H', ore='coal', value=2, weight=1)
 G.add_node('I', ore='diamond', value=12, weight=7)
 
-# Add edges with travel jarak (consider both directions)
+# membuat edge dua arah
 edges = [
     ('A', 'B', 5), ('B', 'A', 5), ('A', 'H', 6), ('H', 'A', 6),
     ('A', 'C', 3), ('C', 'A', 3), ('B', 'D', 4), ('D', 'B', 4),
@@ -29,7 +29,7 @@ edges = [
 for u, v, jarak in edges:
     G.add_edge(u, v, jarak=jarak)
 
-MAX_ORE_WEIGHT = 15  # Maximum weight the miner can carry
+MAX_ORE_WEIGHT = 15  # Max inventory Penambang
 
 def brute_force_solution(graph, max_ore_weight):
     best_path = []
@@ -41,8 +41,8 @@ def brute_force_solution(graph, max_ore_weight):
     nodes = list(graph.nodes())
     nodes.remove('A')
 
-    # Generate all possible paths that start and end at 'A'
-    for length in range(1, len(nodes) + 1):  # Length starts from 1 to ensure visiting at least one other node
+    # Semua kemungkinan Path
+    for length in range(1, len(nodes) + 1):  
         for subset in itertools.permutations(nodes, length):
             path = ['A'] + list(subset) + ['A']
             total_value = 0
@@ -50,7 +50,7 @@ def brute_force_solution(graph, max_ore_weight):
             total_distance = 0
             ore_counts = {}
 
-            # Evaluate the path
+            # Path Harus Valid
             valid_path = True
             for i in range(len(path) - 1):
                 if not graph.has_edge(path[i], path[i + 1]):
@@ -60,7 +60,7 @@ def brute_force_solution(graph, max_ore_weight):
             if not valid_path:
                 continue
 
-            for i in range(1, len(path) - 1):  # Skip the first and last 'A'
+            for i in range(1, len(path) - 1): 
                 node = path[i]
                 total_value += graph.nodes[node]['value']
                 total_ore_weight += graph.nodes[node]['weight']
@@ -85,7 +85,7 @@ def measure_running_time(func, *args, **kwargs):
     running_time = end_time - start_time
     return result, running_time
 
-# Measure the running time of brute force solution
+# Running Time
 (brute_force_path, brute_force_value, brute_force_ore_weight, brute_force_total_distance, brute_force_ore_counts), brute_force_running_time = measure_running_time(brute_force_solution, G, MAX_ORE_WEIGHT)
 
 print("Brute Force Solution:")
